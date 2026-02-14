@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Only For You 💖</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    color: white;
+}
+
+/* Netflix Intro */
+#intro {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#intro h1 {
+    font-size: 60px;
+    color: red;
+    letter-spacing: 8px;
+    animation: zoom 3s ease forwards;
+}
+
+@keyframes zoom {
+    0% { transform: scale(0.1); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Main App */
+#main {
+    display: none;
+    height: 100vh;
+    background: linear-gradient(to right, #141e30, #243b55);
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* Glass Card */
+.glass {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 20px;
+    width: 380px;
+    margin: auto;
+    box-shadow: 0 0 30px rgba(255,0,100,0.5);
+}
+
+/* Chat */
+#chatbox {
+    height: 250px;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    width: 60%;
+}
+
+button {
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    background: crimson;
+    color: white;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.bot { color: pink; }
+.user { color: cyan; }
+
+/* Proposal */
+#proposal {
+    display: none;
+    margin-top: 15px;
+}
+
+/* Hearts */
+.heart {
+    position: absolute;
+    color: pink;
+    font-size: 20px;
+    animation: float 6s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(100vh); opacity: 1; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Netflix Intro -->
+<div id="intro">
+    <h1>ONLY FOR YOU</h1>
+</div>
+
+<!-- Main App -->
+<div id="main">
+
+    <h2>For Harshita 💖</h2>
+    <p>Forever yours – Krishna ❤️</p>
+
+    <button onclick="startMusic()">🎵 Start Love Story</button>
+
+    <div class="glass">
+
+        <div id="chatbox">
+            <p class="bot"><b>Only For You:</b> Harshita... I love you ❤️ – from your Krishna 💌</p>
+        </div>
+
+        <input type="text" id="userInput" placeholder="Talk to your Krishna...">
+        <button onclick="sendMessage()">Send</button>
+
+        <div id="proposal">
+            <h3>Harshita, Will You Be Mine Forever? 💍</h3>
+            <button onclick="celebrate()">YES ❤️</button>
+        </div>
+
+        <button onclick="showProposal()">💖 Special Question</button>
+
+    </div>
+
+</div>
+
+<!-- Music -->
+<iframe id="music" width="0" height="0" allow="autoplay"></iframe>
+
+<script>
+
+/* Intro Transition */
+setTimeout(() => {
+    document.getElementById("intro").style.display = "none";
+    document.getElementById("main").style.display = "block";
+}, 3000);
+
+/* Music */
+function startMusic() {
+    document.getElementById("music").src =
+    "https://www.youtube.com/embed/8xg3vE8Ie_E?autoplay=1&loop=1&playlist=8xg3vE8Ie_E";
+}
+
+/* Chat */
+async function sendMessage() {
+    const inputField = document.getElementById("userInput");
+    const message = inputField.value;
+    const chatbox = document.getElementById("chatbox");
+
+    if (!message) return;
+
+    chatbox.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+
+    let botMsg = document.createElement("p");
+    botMsg.className = "bot";
+    botMsg.innerHTML = "<b>Only For You:</b> ";
+    chatbox.appendChild(botMsg);
+
+    let text = data.reply.replace(/you/gi, "Harshita");
+    let i = 0;
+
+    function typeEffect() {
+        if (i < text.length) {
+            botMsg.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeEffect, 40);
+        }
+    }
+
+    typeEffect();
+
+    inputField.value = "";
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+/* Proposal */
+function showProposal() {
+    document.getElementById("proposal").style.display = "block";
+}
+
+function celebrate() {
+    document.getElementById("proposal").innerHTML =
+    "<h2>She Said YES 💖😭</h2><p>Krishna + Harshita Forever ❤️</p>";
+    startFireworks();
+}
+
+/* Fireworks */
+function startFireworks() {
+    setInterval(() => {
+        let spark = document.createElement("div");
+        spark.className = "heart";
+        spark.style.left = Math.random()*100 + "vw";
+        spark.innerHTML = "💖";
+        document.body.appendChild(spark);
+        setTimeout(()=> spark.remove(), 6000);
+    }, 200);
+}
+
+</script>
+
+</body>
+</html>
